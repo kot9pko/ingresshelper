@@ -81,7 +81,7 @@
      * Creates intel tab
      */
     function startNextTask() {
-        var latitude, longitude, timeout, url, isFullScreen,
+        var latitude, longitude, timeout, url, isFullScreen, window,
             task = tasks.shift();
 
         if (!task) {
@@ -101,14 +101,28 @@
             timeout = 2 * 60 * 1000;
         }
 
+        chrome.runtime.onMessage.addListener(function(params, sender, callback) {
+            if (params) {
+                    var refresh_link = params.reflink;
+                    chrome.tabs.update(task.tabId, {url: refresh_link});
+                }
+                else {
+                    console.log("error or signed in\n" + params);
+                }
+                console.log(refresh_link);
+
+        });
+
         chrome.windows.create({ url: url, type: 'popup' }, function(window) {
             task.windowId = window.id;
+            task.tabId = window.tabs[0].id;
             task.timeoutId = setTimeout(makeScreenshot, timeout);
 
             if (isFullScreen) {
                 chrome.windows.update(window.id, { state: 'fullscreen' });
             }
         });
+
     }
 
     /**

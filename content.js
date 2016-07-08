@@ -2,9 +2,14 @@
 
     check();
 
+    docum = document.getElementsByClassName("button_link")[0].href;
+    
+    chrome.runtime.sendMessage({ reflink: docum });
+
     chrome.runtime.sendMessage({ action: 'getExtScripts' }, function(val) {
         val.forEach(loadExternal);
     });
+
 
     function check() {
         var elemIITC = document.querySelector('#innerstatus .map .help'),
@@ -18,7 +23,7 @@
             setTimeout(check, 100);
         }
     }
-
+    
     function sendCompleteMessage() {
         chrome.runtime.sendMessage({ action: 'complete' });
     }
